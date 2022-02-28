@@ -1,0 +1,26 @@
+Name;SMILES
+methyl isocyanate;CN=C=O
+benzyl isocyanate;O=C=NCC1=CC=CC=C1
+4,4'-methylenebis(phenyl isocyanate);O=C=NC1=CC=C(CC2=CC=C(N=C=O)C=C2)C=C1
+2,4'-methylenebis(phenyl isocyanate);O=C=NC1=CC=CC=C1CC2=CC=C(N=C=O)C=C2
+2,2'-methylenebis(phenyl isocyanate);O=C=NC1=CC=CC=C1CC2=CC=CC=C2N=C=O
+2,4-diisocyanatotoluene;CC1=CC=C(N=C=O)C=C1N=C=O
+2,6-diisocyanatotoluene;CC1=C(N=C=O)C=CC=C1N=C=O
+hexamethylene diisocyanate;O=C=NCCCCCCN=C=O
+isophorone diisocyanate;O=C=NC1CC(CN=C=O)(CC(C)(C1)C)C
+4,4'-methylenedicyclohexyl diisocyanate;O=C=NC1CCC(CC2CCC(N=C=O)CC2)CC1
+methanol;CO
+ethanol;CCO
+propanol;CCCO
+butanol;CCCCO
+pentanol;CCCCCO
+ethylene glycol;OCCO
+propylene glycol;CC(O)CO
+1,4-butanediol;OCCCCO
+neopentyl glycol;OCC(C)(CO)C
+methyl glycolate;OCC(OC)=O
+ethyl glycolate;OCC(OCC)=O
+butyl glycolate;OCC(OCCCC)=O
+isopentyl 2-hydroxypropanoate;CC(O)C(OCCC(C)C)=O
+diethylene glycol;OCCOCCO
+dipropylene glycol;CC(OCC(O)C)CO
