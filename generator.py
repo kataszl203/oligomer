@@ -1,5 +1,4 @@
 from rdkit import Chem
-from rdkit.Chem import Draw
 from rdkit.Chem import rdChemReactions
 
 def MakeOligomers(substrates, size):
@@ -13,6 +12,7 @@ def MakeOligomers(substrates, size):
     iso = Chem.MolFromSmiles('N=C=O')
     diiso = Chem.MolFromSmiles('O=C=N.N=C=O')
     ol = Chem.MolFromSmiles('CO')
+    ol_2 = Chem.MolFromSmiles('COCCO')
     diol = Chem.MolFromSmiles('OC.CO')
     
     a_list = [] #isocyanates and diisocyanates
@@ -28,8 +28,9 @@ def MakeOligomers(substrates, size):
             a_list.append(comp)
 
         elif comp.HasSubstructMatch(diol):
-            comp.SetProp('func_group', 'diol')
-            b_list.append(comp)
+            if not comp.HasSubstructMatch(ol_2):
+                comp.SetProp('func_group', 'diol')
+                b_list.append(comp)
 
         elif comp.HasSubstructMatch(ol):
             comp.SetProp('func_group', 'ol')
@@ -67,7 +68,6 @@ def MakeOligomers(substrates, size):
         for a in a_list:
             for b in b_list:
                 if a.GetProp('func_group') == 'iso' and b.GetProp('func_group') == 'diol':
-                    print(Chem.MolToSmiles(a), Chem.MolToSmiles(b))
                     reaction = aba
                     reacts = (a,b,a)
                     rxn = rdChemReactions.ReactionFromSmarts(reaction)
@@ -85,12 +85,27 @@ def MakeOligomers(substrates, size):
                     i+=1
                     print('Reaction',i ,' :', Chem.MolToSmiles(reacts[0]), '+', Chem.MolToSmiles(reacts[1]), '+', Chem.MolToSmiles(reacts[2]), '->', Chem.MolToSmiles(products[0][0]))
         
-
-    elif size == 4: #and a and b has 2 functional groups each
+    elif size == 4:
         print('--- TETRAMERIZATION ---')
-        reaction = abab
-        reacts = (a,b,a,b)
+        i = 0
+        for a in a_list:
+            if a.GetProp('func_group') == 'diiso':
+                for b in b_list:
+                    if b.GetProp('func_group') == 'diol':
+                        reaction = abab
+                        reacts = (a,b,a,b)
+                        rxn = rdChemReactions.ReactionFromSmarts(reaction)
+                        products = rxn.RunReactants(reacts)
+                        products_list.append(products[0][0])
+                        i+=1
+                        print('Reaction',i ,' :', Chem.MolToSmiles(reacts[0]),'+', Chem.MolToSmiles(reacts[1]),'+', Chem.MolToSmiles(reacts[2]),'+', Chem.MolToSmiles(reacts[3]),'->', Chem.MolToSmiles(products[0][0]))
+
     else:
         print('Error - oligomer size out of range!')
                                      
     return products_list
+
+#test
+sub_list = Chem.SmilesMolSupplier('substrates.txt', delimiter=';', smilesColumn=1, nameColumn=0)
+products = MakeOligomers(sub_list, 4)
+
