@@ -2,10 +2,12 @@ from rdkit import Chem
 from rdkit.Chem import rdChemReactions
 from rdkit.Chem import Draw
 from rdkit.Chem import rdmolfiles
-from matplotlib.colors import ColorConverter
+from openbabel import openbabel as ob
+import os
+
 import os.path
 
-def MakeOligomers(substrates, size, output=None, output_molecules=None, images=False, features=None):
+def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3D=False, images=False, features=None):
     
     #substrates - list of substrates as Mol objects 
     #size - int (2=dimer, 3=trimer, 4=tetramer)
@@ -132,6 +134,9 @@ def MakeOligomers(substrates, size, output=None, output_molecules=None, images=F
     else:
         print('Error: No such file or directory. Wrong input with substrates!')
     
+    conversion = ob.OBConversion()
+    mol = ob.OBMol()
+    
     if output:
         o = open(output,'w')
         i = 0
@@ -142,31 +147,56 @@ def MakeOligomers(substrates, size, output=None, output_molecules=None, images=F
         o.close()
         print('\nOutput file: %s'%output)
     
-    if output_molecules:
+    if molecules_2D:
         path = os.getcwd()
-        if not os.path.exists(path+'/oligomers'):
-            os.makedirs(path+'/oligomers')
+        if not os.path.exists(path+'/oligomers_2D'):
+            os.makedirs(path+'/oligomers_2D')
             i=0
             for product in products_list:
                 i+=1
-                mol_file = './oligomers/'+str(i)+'.mol'
+                mol_file = './oligomers_2D/'+str(i)+'.mol'
                 rdmolfiles.MolToMolFile(product, mol_file)
-            print('\n%i mol files saved in %s'%(i,path+'/oligomers'))
+            print('\n%i mol files saved in %s'%(i,path+'/oligomers_2D\n'))
         else:
-            print('Error: directory ''./oligomers'' already exist!')
+            print('Error: directory ''./oligomers_2D'' already exist!\n')
+
+    if molecules_3D:
+        path = os.getcwd()
+        if not os.path.exists(path+'/oligomers_3D'):
+            os.makedirs(path+'/oligomers_3D')
+            i=0
+            conversion.SetInAndOutFormats("smi", "mol2")
+            gen3d = ob.OBOp.FindType("gen3D")
+            for product in products_list:
+                i+=1
+                mol_file = './oligomers_3D/'+str(i)+'.mol2'
+                conversion.ReadString(mol, Chem.MolToSmiles(product))
+                gen3d.Do(mol, "--best")
+
+                print('\nMolecule %i has %d conformers' % (i, mol.NumConformers())) 
+                conversion.WriteFile(mol, mol_file)
+
+            print('\n%i mol2 files saved in %s'%(i,path+'/oligomers_3D\n'))
+        else:
+            print('Error: directory ''./oligomers_3D'' already exist!\n')
 
     if images:
         path = os.getcwd()
+
         if not os.path.exists(path+'/oligomers_images'):
             os.makedirs(path+'/oligomers_images')
             i=0
+            conversion.SetInAndOutFormats("smi", "_png2")
             for product in products_list:
                 i+=1
                 file = './oligomers_images/'+str(i)+'.png'
-                Draw.MolToFile(product, file, size=(600,600))
-            print('\n%i images saved in %s'%(i,path+'/oligomers_images'))
+                conversion.ReadString(mol, Chem.MolToSmiles(product))
+                conversion.WriteFile(mol, file)
+
+            print('\n%i images saved in %s'%(i,path+'/oligomers_images\n'))
+
         else:
-            print('Error: directory ''./oligomers_images'' already exist!')
+            print('Error: directory ''./oligomers_images'' already exist!\n')
     
     print('--- DONE ---')
 
