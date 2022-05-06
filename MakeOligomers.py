@@ -53,130 +53,164 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
     print("Loading input file...", end=" ")
     if os.path.exists(substrates):
         print("OK.")
-        substrates = Chem.SmilesMolSupplier(substrates, delimiter=';', smilesColumn=1, nameColumn=0)
-
-        #Assign properties to the substrates according to the functional group
-        n_diiso=0 
-        n_iso=0 
-        n_ol=0 
-        n_diol=0 
-        n=0   
-        for comp in substrates:
-            if comp.HasSubstructMatch(diiso):
-                comp.SetProp('func_group', 'diiso')
-                a_list.append(comp)
-                n_diiso+=1
-
-            elif comp.HasSubstructMatch(iso):
-                comp.SetProp('func_group', 'iso')
-                a_list.append(comp)
-                n_iso+=1
-
-            elif comp.HasSubstructMatch(diol):
-                if comp.HasSubstructMatch(ol_2):
-                    comp.SetProp('func_group', 'ol')
-                    b_list.append(comp)
-                    n_ol+=1
-                else:
-                    comp.SetProp('func_group', 'diol')
-                    b_list.append(comp)
-                    n_diol+=1
-
-            elif comp.HasSubstructMatch(ol):
-                comp.SetProp('func_group', 'ol')
-                b_list.append(comp)
-                n_ol+=1
-            n+=1
-                   
-        print('Number of uploaded substrates: %i\n\n Substrates types:\n - %i isocyanates\n - %i diisocyanates\n - %i alcohols/phenols\n - %i diols\n' 
-              % (n, n_iso, n_diiso, n_ol, n_diol))
-            
+        
+        valid = prepare_reaction(substrates)
         #Perfom reaction
         print('Reaction type: ', end="")
-        if (n_iso != 0 or n_diiso != 0) and (n_ol != 0 or n_diol != 0):
+        if valid:
             print('polyurethane fragments synthesis.\n')
             print('Number of units for reaction:', size)
             print('\n------------------------------------------------')
             if size == 2:
-                print('-_-_-_-_-_-_-_-_ dimerization -_-_-_-_-_-_-_-_-_')
-                i = 0
                 mer='dimer'
-                for a in a_list:
-                    for b in b_list:
-                        reaction = ab
-                        reacts = (a,b)
-                        rxn = rdChemReactions.ReactionFromSmarts(reaction)
-                        products = rxn.RunReactants(reacts)
-                        products_list.append(products[0][0])
-                        i+=1
-                        print('\nReaction %i: %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),
-                            Chem.MolToSmiles(reacts[1]),Chem.MolToSmiles(products[0][0])))
-
+                i = perform_dimerization()
             elif size == 3:
-                print('-_-_-_-_-_-_-_-_ trimerization -_-_-_-_-_-_-_-_-')
-                i = 0
                 mer='trimer'
-                for a in a_list:
-                    for b in b_list:
-                        if a.GetProp('func_group') == 'iso' and b.GetProp('func_group') == 'diol':
-                            reaction = aba
-                            reacts = (a,b,a)
-                            rxn = rdChemReactions.ReactionFromSmarts(reaction)
-                            products = rxn.RunReactants(reacts)
-                            products_list.append(products[0][0])
-                            i+=1
-                            print('\nReaction %i: %s + %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),
-                                Chem.MolToSmiles(reacts[1]),Chem.MolToSmiles(reacts[2]),Chem.MolToSmiles(products[0][0])))
-
-                        elif a.GetProp('func_group') == 'diiso' and b.GetProp('func_group') == 'ol':
-                            reaction = bab
-                            reacts = (b,a,b)
-                            rxn = rdChemReactions.ReactionFromSmarts(reaction)
-                            products = rxn.RunReactants(reacts)
-                            products_list.append(products[0][0])
-                            i+=1
-                            print('\nReaction %i: %s + %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),
-                                Chem.MolToSmiles(reacts[1]),Chem.MolToSmiles(reacts[2]),Chem.MolToSmiles(products[0][0])))
-
+                i = perform_trimerization()
             elif size == 4:
-                print('-_-_-_-_-_-_-_- tetramerization -_-_-_-_-_-_-_-_')
-                i = 0
                 mer='tetramer'
-                for a in a_list:
-                    if a.GetProp('func_group') == 'diiso':
-                        for b in b_list:
-                            if b.GetProp('func_group') == 'diol':
-                                reaction = abab
-                                reacts = (a,b,a,b)
-                                rxn = rdChemReactions.ReactionFromSmarts(reaction)
-                                products = rxn.RunReactants(reacts)
-                                products_list.append(products[0][0])
-                                i+=1
-                                print('\nReaction %i: %s + %s + %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),Chem.MolToSmiles(reacts[1]),
-                                    Chem.MolToSmiles(reacts[2]),Chem.MolToSmiles(reacts[3]),Chem.MolToSmiles(products[0][0])))
-
+                i = perform_tetramerization()
             else:
                 print('Error: Number of units out of range! (2=dimer, 3=trimer, 4=tetramer)')
+                exit(1)
+        else:
+            print('invalid reaction properties')
+            exit(1)
         
     else:
         print('\nError: No such file or directory. Wrong input file name!')
+        exit(1)
     
     print('\nSynthesis done!')
     print('%i products were generated.\n'%i) 
     print('------------------------------------------------')
+   
+    process_output(output)
+    process_molecules_2D(molecules_2D)
+    process_molecules_3D(molecules_3D, mer) 
+    process_conformers(conformers, mer) 
+    process_images(images) 
     
+    print('                     END')
+    print('------------------------------------------------\n')
+
+    return
+
+#segmentation fault???
+
+def prepare_reaction(substrates):
+
+    substrates = Chem.SmilesMolSupplier(substrates, delimiter=';', smilesColumn=1, nameColumn=0)
+
+    #Assign properties to the substrates according to the functional group
+    n_diiso=0 
+    n_iso=0 
+    n_ol=0 
+    n_diol=0 
+    n=0   
+    for comp in substrates:
+        if comp.HasSubstructMatch(diiso):
+            comp.SetProp('func_group', 'diiso')
+            a_list.append(comp)
+            n_diiso+=1
+
+        elif comp.HasSubstructMatch(iso):
+            comp.SetProp('func_group', 'iso')
+            a_list.append(comp)
+            n_iso+=1
+
+        elif comp.HasSubstructMatch(diol):
+            if comp.HasSubstructMatch(ol_2):
+                comp.SetProp('func_group', 'ol')
+                b_list.append(comp)
+                n_ol+=1
+            else:
+                comp.SetProp('func_group', 'diol')
+                b_list.append(comp)
+                n_diol+=1
+
+        elif comp.HasSubstructMatch(ol):
+            comp.SetProp('func_group', 'ol')
+            b_list.append(comp)
+            n_ol+=1
+        n+=1
+               
+    print('Number of uploaded substrates: %i\n\n Substrates types:\n - %i isocyanates\n - %i diisocyanates\n - %i alcohols/phenols\n - %i diols\n' 
+          % (n, n_iso, n_diiso, n_ol, n_diol))
+    return (n_iso != 0 or n_diiso != 0) and (n_ol != 0 or n_diol != 0)
+
+def perform_dimerization():
+    print('-_-_-_-_-_-_-_-_ dimerization -_-_-_-_-_-_-_-_-_')
+    i = 0
+    for a in a_list:
+        for b in b_list:
+            reaction = ab
+            reacts = (a,b)
+            rxn = rdChemReactions.ReactionFromSmarts(reaction)
+            products = rxn.RunReactants(reacts)
+            products_list.append(products[0][0])
+            i+=1
+            print('\nReaction %i: %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),
+                Chem.MolToSmiles(reacts[1]),Chem.MolToSmiles(products[0][0])))
+    return i
+
+def perform_trimerization():
+    print('-_-_-_-_-_-_-_-_ trimerization -_-_-_-_-_-_-_-_-')
+    i = 0
+    for a in a_list:
+        for b in b_list:
+            if a.GetProp('func_group') == 'iso' and b.GetProp('func_group') == 'diol':
+                reaction = aba
+                reacts = (a,b,a)
+                rxn = rdChemReactions.ReactionFromSmarts(reaction)
+                products = rxn.RunReactants(reacts)
+                products_list.append(products[0][0])
+                i+=1
+                print('\nReaction %i: %s + %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),
+                    Chem.MolToSmiles(reacts[1]),Chem.MolToSmiles(reacts[2]),Chem.MolToSmiles(products[0][0])))
+
+            elif a.GetProp('func_group') == 'diiso' and b.GetProp('func_group') == 'ol':
+                reaction = bab
+                reacts = (b,a,b)
+                rxn = rdChemReactions.ReactionFromSmarts(reaction)
+                products = rxn.RunReactants(reacts)
+                products_list.append(products[0][0])
+                i+=1
+                print('\nReaction %i: %s + %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),
+                    Chem.MolToSmiles(reacts[1]),Chem.MolToSmiles(reacts[2]),Chem.MolToSmiles(products[0][0])))
+    return i
+
+def perform_tetramerization():
+    print('-_-_-_-_-_-_-_- tetramerization -_-_-_-_-_-_-_-_')
+    i = 0
+    for a in a_list:
+        if a.GetProp('func_group') == 'diiso':
+            for b in b_list:
+                if b.GetProp('func_group') == 'diol':
+                    reaction = abab
+                    reacts = (a,b,a,b)
+                    rxn = rdChemReactions.ReactionFromSmarts(reaction)
+                    products = rxn.RunReactants(reacts)
+                    products_list.append(products[0][0])
+                    i+=1
+                    print('\nReaction %i: %s + %s + %s + %s -> %s' %(i,Chem.MolToSmiles(reacts[0]),Chem.MolToSmiles(reacts[1]),
+                        Chem.MolToSmiles(reacts[2]),Chem.MolToSmiles(reacts[3]),Chem.MolToSmiles(products[0][0])))
+    return i
+
+
+def process_output(output):
     if output:
         print('Products will be saved in SMILES format.')
-        o = open(output,'w')
-        i = 0
-        o.write('Nr\tSMILES\n')
-        for product in products_list:
-            i+=1
-            o.write(str(i)+'\t'+Chem.MolToSmiles(product)+'\n')
-        o.close()
+        with open(output, 'w') as o:
+            i = 0
+            o.write('Nr\tSMILES\n')
+            for product in products_list:
+                i+=1
+                o.write(str(i)+'\t'+Chem.MolToSmiles(product)+'\n')
         print('Saving file: %s\n'%output)
         print('------------------------------------------------')
-    
+
+def process_molecules_2D(molecules_2D):
     if molecules_2D:
         print('Generating 2D structures.\n')
         path = os.getcwd()
@@ -192,6 +226,7 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
         else:
             print('Error: directory ''./oligomers_2D'' already exist!\n')
 
+def process_molecules_3D(molecules_3D, mer):
     if molecules_3D:
         print('Generating 3D structures.\n')
         path = os.getcwd()
@@ -221,7 +256,8 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
                 print('------------------------------------------------')
         else:
             print('Error: directory ''./oligomers_3D'' already exist!\n')
-    
+
+def process_conformers(conformers, mer):
     if conformers:
         #Jak wyciszyć te funkcje generujące konformery żeby nie printowały tyle tekstu?
         print('Generating conformers for 3D structures.')
@@ -290,8 +326,8 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
             print('\n%i mol2 files saved in %s'%(i,path+'/oligomers_conformers\n'))
         else:
             print('Error: directory ''./oligomers_conformers'' already exist!\n')
-    
 
+def process_images(images):
     if images:
         print("Generating 2D images.")
         path = os.getcwd()
@@ -313,11 +349,3 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
 
         else:
             print('Error: directory ''./oligomers_images'' already exist!\n')
-    
-    
-    print('                     END')
-    print('------------------------------------------------\n')
-
-    return
-
-#segmentation fault???
