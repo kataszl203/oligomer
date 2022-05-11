@@ -8,3 +8,9 @@ Used packages:
 RDKit https://www.rdkit.org/docs/index.html
 Pybel https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html 
 
+## build patched openbabel
+```
+chmod +x ./build_openbabel.sh
+./build_openbabel.sh
+```
+

@@ -1,12 +1,17 @@
 
 #sudo apt-get install python3-rdkit librdkit1 rdkit-data
-#sudo apt install libopenbabel-dev
-#sudo apt install python-openbabel
-#export PYTHONPATH=${PYTHONPATH}:$usr/lib/python3/dist-packages
-#export PYTHONPATH=${PYTHONPATH}:$usr/lib/openbabel
 #pip3 install matplotlib
 
 import argparse
+
+import os
+import sys
+
+external_lib_path = os.path.dirname(os.path.realpath(__file__)) + '/external/build/lib/python/site-packages'
+
+if os.path.exists(external_lib_path):
+    sys.path.insert(0, external_lib_path)
+
 from MakeOligomers import MakeOligomers
 from argparse import RawTextHelpFormatter
 
