@@ -270,7 +270,7 @@ def process_conformers(conformers, mer):
             with open(main_file,'w') as outfile:
                 for product in products_list:
                     i+=1
-                    print('\nMolecule %i'% i)
+                    print('\nMolecule %i\n'% i)
                     mol = pybel.readstring("smi", Chem.MolToSmiles(product))
                     mol.addh()
                     mol.make3D()
@@ -279,15 +279,15 @@ def process_conformers(conformers, mer):
                     conformer.GetConformers(mol.OBMol)
                     # checking if conformers are different
                     dif_conf = 1
-                    init_conform = conversion.WriteString(mol.OBMol.SetConformer(0))
+                    init_conform = mol.OBMol.SetConformer(0)
                     
                     for n in range(1, mol.OBMol.NumConformers()):
-                        new_conform = conversion.WriteString(mol.OBMol.SetConformer(n))
+                        new_conform = mol.OBMol.SetConformer(n)
 
                         if init_conform != new_conform:
                             dif_conf += 1
 
-                    print('Number of conformers using confab: %d (%i different structures)' % (mol.OBMol.NumConformers(), dif_conf))
+                    print('Number of conformers using confab: %d (%i different structures)\n' % (mol.OBMol.NumConformers(), dif_conf))
 
 
                     if dif_conf == 1:
@@ -295,9 +295,9 @@ def process_conformers(conformers, mer):
                         pff.DiverseConfGen(0.5, 1000000, 50.0, False)
                         pff.GetConformers(mol.OBMol)
                         if mol.OBMol.NumConformers() > 20:
-                            print('Number of conformers using genetic algorithm: %d (%i will be saved)' % (mol.OBMol.NumConformers(),conf_number))
+                            print('Number of conformers using genetic algorithm: %d (%i will be saved)\n' % (mol.OBMol.NumConformers(),conf_number))
                         else:
-                            print('Number of conformers using genetic algorithm: %d' % (mol.OBMol.NumConformers()))
+                            print('Number of conformers using genetic algorithm: %d\n' % (mol.OBMol.NumConformers()))
                     
                     
                         if mol.OBMol.NumConformers() <= 20:
@@ -317,7 +317,8 @@ def process_conformers(conformers, mer):
                                 with open(mol_file,'r') as infile:
                                     outfile.write(infile.read())
 
-            print('\n%i mol2 files saved in %s'%(i,path+'/oligomers_conformers\n'))
+            print('\nConformers saved in %s'%(i,path+'/oligomers_conformers\n'))
+            print('------------------------------------------------')
         else:
             print('Error: directory ''./oligomers_conformers'' already exist!\n')
 
