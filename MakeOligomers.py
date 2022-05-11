@@ -1,4 +1,3 @@
-from tabnanny import verbose
 from rdkit import Chem
 from rdkit.Chem import rdChemReactions
 from rdkit.Chem import rdmolfiles
@@ -6,8 +5,6 @@ from openbabel import openbabel as ob
 from openbabel import pybel
 import os
 import os.path
-
-
 
 #General settings
 conformer = ob.OBConformerSearch()
