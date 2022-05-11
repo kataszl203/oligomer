@@ -1,3 +1,4 @@
+from tabnanny import verbose
 from rdkit import Chem
 from rdkit.Chem import rdChemReactions
 from rdkit.Chem import rdmolfiles
@@ -7,8 +8,10 @@ import os
 import os.path
 
 
+
 #General settings
 conformer = ob.OBConformerSearch()
+conformer.SetLogStream(None)
 x = ob.OBMinimizingEnergyConformerScore()
 conformer.SetScore(x)
 y = ob.OBStericConformerFilter()
@@ -29,12 +32,12 @@ b_list = [] #mono and poliols
 products_list = [] #output
 
 #Reactions in SMARTS
-#Dimerisation
+#Dimerization
 ab = '[N:1]=[C:2]=[O:3].[C:4][O;H1:5]>>[N:1][C:2]([O:5][C:4])=[O:3]'
-#Trimerisation
+#Trimerization
 aba = '[N:1]=[C:2]=[O:3].([O;H1:4][C:5].[C:6][O;H1:7]).[N:8]=[C:9]=[O:10]>>([N:1][C:2](=[O:3])[O:4][C:5].[C:6][O:7][C:9](=[O:10])[N:8])'
 bab = '[C:1][O;H1:2].([O:3]=[C:4]=[N:5].[N:6]=[C:7]=[O:8]).[C:9][O;H1:10]>>([C:1][O:2][C:4](=[O:3])[N:5].[N:6][C:7](=[O:8])[O:10][C:9])'
-#Tetramerisation
+#Tetramerization
 abab = ('[N:1]=[C:2]=[O:3].([O;H1:4][C:5].[C:6][O;H1:7]).([N:8]=[C:9]=[O:10].[N:11]=[C:12]=[O:13]).[O;H1:14][C:15]>>'
         '([N:1][C:2](=[O:3])[O:4][C:5].[C:6][O:7][C:9](=[O:10])[N:8].[N:11][C:12](=[O:13])[O:14][C:15])')
 
@@ -52,7 +55,7 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
   
     print("Loading input file...", end=" ")
     if os.path.exists(substrates):
-        print("OK.")
+        print("OK.\n")
         
         valid = prepare_reaction(substrates)
         #Perfom reaction
@@ -95,8 +98,6 @@ def MakeOligomers(substrates, size, output=None, molecules_2D=False, molecules_3
     print('------------------------------------------------\n')
 
     return
-
-#segmentation fault???
 
 def prepare_reaction(substrates):
 
@@ -259,7 +260,6 @@ def process_molecules_3D(molecules_3D, mer):
 
 def process_conformers(conformers, mer):
     if conformers:
-        #Jak wyciszyć te funkcje generujące konformery żeby nie printowały tyle tekstu?
         print('Generating conformers for 3D structures.')
         path = os.getcwd()
         conversion = ob.OBConversion()
@@ -278,15 +278,12 @@ def process_conformers(conformers, mer):
                     mol.addh()
                     mol.make3D()
                     print('Number of rotatable bonds: %d\n' % (mol.OBMol.NumRotors()))
-
                     conformer.Setup(mol.OBMol, conf_number, 5, 5, 25)
                     conformer.GetConformers(mol.OBMol)
-
                     # checking if conformers are different
                     dif_conf = 1
                     init_conform = conversion.WriteString(mol.OBMol.SetConformer(0))
-
-                
+                    
                     for n in range(1, mol.OBMol.NumConformers()):
                         new_conform = conversion.WriteString(mol.OBMol.SetConformer(n))
 
@@ -298,7 +295,7 @@ def process_conformers(conformers, mer):
 
                     if dif_conf == 1:
                         pff.Setup(mol.OBMol)
-                        pff.DiverseConfGen(0.5, 1000000, 50.0, True)
+                        pff.DiverseConfGen(0.5, 1000000, 50.0, False)
                         pff.GetConformers(mol.OBMol)
                         if mol.OBMol.NumConformers() > 20:
                             print('Number of conformers using genetic algorithm: %d (%i will be saved)' % (mol.OBMol.NumConformers(),conf_number))
@@ -329,7 +326,7 @@ def process_conformers(conformers, mer):
 
 def process_images(images):
     if images:
-        print("Generating 2D images.")
+        print('Generating 2D images.\n')
         path = os.getcwd()
         conversion = ob.OBConversion()
         mol = ob.OBMol()
