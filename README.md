@@ -1,4 +1,5 @@
 # oligomer
+oligomer version 1.0
 Generator of short oligomers of synthetic polymers (version for polyurethanes).
 
 This tool using SMILES entry generates specified oligomers (dimers, trimers, tetramers) encoded in SMILES.
@@ -11,33 +12,33 @@ RDKit https://www.rdkit.org/docs/index.html
 Pybel https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html
 
 ## Dependencies for Debian/Ubuntu
-
-'# apt update
-'# apt -y install --no-install-recommends\
-  build-essential\
-  ca-certificates\
-  cmake\
-  git\
-  zlib1g-dev\
-  libcairo2-dev\
-  libboost-dev\
-  libboost-program-options-dev\
-  libboost-iostreams-dev\
-  libboost-regex-dev\
-  rapidjson-dev\
-  python3-dev\
-  libbz2-dev\
-  libeigen3-dev\
-  libxml2-dev\
-  swig\
-  lzma\
-  python3-rdkit\
-  python3-pip\
-  librdkit1\
-  rdkit-data\
-  wget
-  pip3 install matplotlib
-
+```
+$apt update
+$apt -y install --no-install-recommends\
+                build-essential\
+                ca-certificates\
+                cmake\
+                git\
+                zlib1g-dev\
+                libcairo2-dev\
+                libboost-dev\
+                libboost-program-options-dev\
+                libboost-iostreams-dev\
+                libboost-regex-dev\
+                rapidjson-dev\
+                python3-dev\
+                libbz2-dev\
+                libeigen3-dev\
+                libxml2-dev\
+                swig\
+                lzma\
+                python3-rdkit\
+                python3-pip\
+                librdkit1\
+                rdkit-data\
+                wget
+$pip3 install matplotlib
+```
 ### build patched openbabel
 ```
 chmod +x ./build_openbabel.sh
