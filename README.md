@@ -1,5 +1,6 @@
 # oligomer
-oligomer version 1.0
+*version 1.0*
+
 Generator of short oligomers of synthetic polymers (version for polyurethanes).
 
 This tool using SMILES entry generates specified oligomers (dimers, trimers, tetramers) encoded in SMILES.
@@ -12,7 +13,7 @@ RDKit https://www.rdkit.org/docs/index.html
 Pybel https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html
 
 ## Dependencies for Debian/Ubuntu
-### Libraries needed to run script
+### Libraries needed to run the script
 ```
 $apt update
 $apt -y install --no-install-recommends\
@@ -40,9 +41,12 @@ $apt -y install --no-install-recommends\
                 wget
 $pip3 install matplotlib
 ```
-### How to build patched openbabel
+### Build patched openbabel
 ```
 $chmod +x ./build_openbabel.sh
 $./build_openbabel.sh
 ```
-
+## Running the project locally
+1. Clone this project locally.
+2. Prepare your input with substrates in SMILES format (ex. substrates.txt)
+3. Run ```$python oligomer.py -h``` to get the help message.
