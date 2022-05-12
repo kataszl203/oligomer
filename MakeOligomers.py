@@ -317,7 +317,7 @@ def process_conformers(conformers, mer):
                                 with open(mol_file,'r') as infile:
                                     outfile.write(infile.read())
 
-            print('\nConformers saved in %s'%(i,path+'/oligomers_conformers\n'))
+            print('\nConformers saved in %s'%(path+'/oligomers_conformers\n'))
             print('------------------------------------------------')
         else:
             print('Error: directory ''./oligomers_conformers'' already exist!\n')

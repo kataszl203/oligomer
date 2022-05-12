@@ -1,2 +1,12 @@
 external
 __pycache__
+oligomers_3D
+oligomers_2D
+oligomers_conformers
+oligomers_images
+Ligands
+substrates
+dimers
+trimers
+tetramers
+.vscode
