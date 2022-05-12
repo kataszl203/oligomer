@@ -47,6 +47,6 @@ $chmod +x ./build_openbabel.sh
 $./build_openbabel.sh
 ```
 ## Running the project locally
-1. Clone this project locally.
-2. Prepare your input with substrates in SMILES format (ex. substrates.txt)
-3. Run ```$python oligomer.py -h``` to get the help message.
+1. Clone this project locally and install all required dependencies.
+2. Prepare your input with substrates in SMILES format (ex. *substrates.txt*).
+3. Run ```$python oligomer.py -h``` to get the help message how to use the script. 
