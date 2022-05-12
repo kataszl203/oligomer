@@ -1,9 +1,4 @@
-
-#sudo apt-get install python3-rdkit librdkit1 rdkit-data
-#pip3 install matplotlib
-
 import argparse
-
 import os
 import sys
 
