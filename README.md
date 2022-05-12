@@ -12,6 +12,7 @@ RDKit https://www.rdkit.org/docs/index.html
 Pybel https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html
 
 ## Dependencies for Debian/Ubuntu
+### Libraries needed to run script
 ```
 $apt update
 $apt -y install --no-install-recommends\
@@ -39,9 +40,9 @@ $apt -y install --no-install-recommends\
                 wget
 $pip3 install matplotlib
 ```
-### build patched openbabel
+### How to build patched openbabel
 ```
-chmod +x ./build_openbabel.sh
-./build_openbabel.sh
+$chmod +x ./build_openbabel.sh
+$./build_openbabel.sh
 ```
 
