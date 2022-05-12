@@ -5,10 +5,40 @@ This tool using SMILES entry generates specified oligomers (dimers, trimers, tet
 Products can be saved as 2D structures in .mol files or .png images, 3D structures in .mol2 files with option to generate conformers. 
 
 Used packages:
-RDKit https://www.rdkit.org/docs/index.html
-Pybel https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html 
 
-## build patched openbabel
+RDKit https://www.rdkit.org/docs/index.html
+
+Pybel https://openbabel.org/docs/dev/UseTheLibrary/Python_Pybel.html
+
+## Dependencies for Debian/Ubuntu
+
+'# apt update
+'# apt -y install --no-install-recommends\
+  build-essential\
+  ca-certificates\
+  cmake\
+  git\
+  zlib1g-dev\
+  libcairo2-dev\
+  libboost-dev\
+  libboost-program-options-dev\
+  libboost-iostreams-dev\
+  libboost-regex-dev\
+  rapidjson-dev\
+  python3-dev\
+  libbz2-dev\
+  libeigen3-dev\
+  libxml2-dev\
+  swig\
+  lzma\
+  python3-rdkit\
+  python3-pip\
+  librdkit1\
+  rdkit-data\
+  wget
+  pip3 install matplotlib
+
+### build patched openbabel
 ```
 chmod +x ./build_openbabel.sh
 ./build_openbabel.sh
