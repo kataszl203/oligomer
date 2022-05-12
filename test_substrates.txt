@@ -1,0 +1,9 @@
+Name;SMILES
+methyl isocyanate;CN=C=O
+benzyl isocyanate;O=C=NCC1=CC=CC=C1
+4,4'-methylenebis(phenyl isocyanate);O=C=NC1=CC=C(CC2=CC=C(N=C=O)C=C2)C=C1
+isopentyl 2-hydroxypropanoate;CC(O)C(OCCC(C)C)=O
+diethylene glycol;OCCOCCO
+dipropylene glycol;CC(OCC(O)C)CO
+
+
