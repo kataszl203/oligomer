@@ -198,7 +198,6 @@ def perform_tetramerization():
 
 def process_output(output):
     if output:
-        path = os.getcwd()
         print('Products will be saved in SMILES format.')
         with open(output, 'w') as o:
             i = 0
@@ -206,68 +205,65 @@ def process_output(output):
             for product in products_list:
                 i+=1
                 o.write(str(i)+'\t'+Chem.MolToSmiles(product)+'\n')
-        print('Saving file: %s\n'%(path+'/'+output))
+        print('Saving file: %s\n'%(output))
         print('------------------------------------------------')
 
 def process_molecules_2D(molecules_2D):
     if molecules_2D:
         print('Generating 2D structures.\n')
-        path = os.getcwd()
-        if not os.path.exists(path+'/'+molecules_2D):
-            os.makedirs(path+'/'+molecules_2D)
+        if not os.path.exists(molecules_2D):
+            os.makedirs(molecules_2D)
             i=0
             for product in products_list:
                 i+=1
-                mol_file = path+'/'+molecules_2D+'/'+str(i)+'.mol'
+                mol_file = molecules_2D+'/'+str(i)+'.mol'
                 rdmolfiles.MolToMolFile(product, mol_file)
-            print('%i mol files saved in %s\n'%(i,(path+'/'+molecules_2D)))
+            print('%i mol files saved in %s\n'%(i,(molecules_2D)))
             print('------------------------------------------------')
         else:
-            print('Error: directory %s already exist!\n' %(path+'/'+molecules_2D))
+            print('Error: directory %s already exist!\n' %(molecules_2D))
 
 def process_molecules_3D(molecules_3D, mer):
     if molecules_3D:
         print('Generating 3D structures.\n')
-        path = os.getcwd()
-        if not os.path.exists(path+'/'+molecules_3D):
-            os.makedirs(path+'/'+molecules_3D)
+        if not os.path.exists(molecules_3D):
+            os.makedirs(molecules_3D)
             i=0
             conversion = ob.OBConversion()
             mol = ob.OBMol()
             conversion.SetInAndOutFormats("smi", "mol2")
             gen3d = ob.OBOp.FindType("gen3D")
-            main_file = path+'/'+molecules_3D+'/ligands.mol2' #file with all ligands together
+            main_file = molecules_3D+'/ligands.mol2' #file with all ligands together
             
             with open(main_file,'w') as outfile:
                 for product in products_list:
                     i+=1
-                    mol_file = path+'/'+molecules_3D+'/'+str(i)+'.mol2'
+                    mol_file = molecules_3D+'/'+str(i)+'.mol2'
                     conversion.ReadString(mol, Chem.MolToSmiles(product))
                     gen3d.Do(mol, "--best")
-        
                     print('Converting molecule %i.\n' % (i))
                     pybel.Molecule(mol).title = 'PU_'+mer+'_'+str(i) 
                     conversion.WriteFile(mol, mol_file)
                     with open(mol_file,'r') as infile:
                         outfile.write(infile.read())
 
-                print('%i mol2 files saved in %s\n'%(i,(path+'/'+molecules_3D)))
+                print('%i mol2 files saved in %s\n'%(i,(molecules_3D)))
                 print('------------------------------------------------')
         else:
-            print('Error: directory %s already exist!\n' % (path+'/'+molecules_3D))
+            print('Error: directory %s already exist!\n' % (molecules_3D))
 
 def process_conformers(conformers, mer):
     if conformers:
         print('Generating conformers for 3D structures.')
-        path = os.getcwd()
+        
         conversion = ob.OBConversion()
         conversion.SetOutFormat("mol2")
     
-        if not os.path.exists(path+'/'+conformers):
-            os.makedirs(path+'/'+conformers)
+        if not os.path.exists(conformers):
+            os.makedirs(conformers)
             i=0
             conf_number = 20
-            main_file = path+'/'+conformers+'/ligands.mol2'
+            main_file = conformers+'/ligands.mol2'
             with open(main_file,'w') as outfile:
                 for product in products_list:
                     i+=1
@@ -295,15 +291,15 @@ def process_conformers(conformers, mer):
                         pff.Setup(mol.OBMol)
                         pff.DiverseConfGen(0.5, 1000000, 50.0, False)
                         pff.GetConformers(mol.OBMol)
-                        if mol.OBMol.NumConformers() > 20:
+                        if mol.OBMol.NumConformers() > conf_number:
                             print('Number of conformers using genetic algorithm: %d (%i will be saved)\n' % (mol.OBMol.NumConformers(),conf_number))
                         else:
                             print('Number of conformers using genetic algorithm: %d\n' % (mol.OBMol.NumConformers()))
                     
                     
-                        if mol.OBMol.NumConformers() <= 20:
+                        if mol.OBMol.NumConformers() <= conf_number:
                             for j in range(mol.OBMol.NumConformers()):
-                                mol_file = path+'/'+conformers+'/'+str(i)+'_'+str(j)+'.mol2'
+                                mol_file = conformers+'/'+str(i)+'_'+str(j)+'.mol2'
                                 mol.OBMol.SetConformer(j)
                                 pybel.Molecule(mol.OBMol).title = 'PU_'+mer+'_'+str(i)+'_'+str(j)
                                 conversion.WriteFile(mol.OBMol, mol_file)
@@ -311,37 +307,36 @@ def process_conformers(conformers, mer):
                                     outfile.write(infile.read())
                         else:
                             for j in range(conf_number):
-                                mol_file = path+'/'+conformers+'/'+str(i)+'_'+str(j)+'.mol2'
+                                mol_file = conformers+'/'+str(i)+'_'+str(j)+'.mol2'
                                 mol.OBMol.SetConformer(j)
                                 pybel.Molecule(mol.OBMol).title = 'PU_'+mer+'_'+str(i)+'_'+str(j)
                                 conversion.WriteFile(mol.OBMol, mol_file)
                                 with open(mol_file,'r') as infile:
                                     outfile.write(infile.read())
 
-            print('\nConformers saved in %s\n'%(path+'/'+conformers))
+            print('\nConformers saved in %s\n'%(conformers))
             print('------------------------------------------------')
         else:
-            print('Error: directory %s already exist!\n'%(path+'/'+conformers))
+            print('Error: directory %s already exist!\n'%(conformers))
 
 def process_images(images):
     if images:
         print('Generating 2D images.\n')
-        path = os.getcwd()
         conversion = ob.OBConversion()
         mol = ob.OBMol()
 
-        if not os.path.exists(path+'/'+images):
-            os.makedirs(path+'/'+images)
+        if not os.path.exists(images):
+            os.makedirs(images)
             i=0
             conversion.SetInAndOutFormats("smi", "_png2")
             for product in products_list:
                 i+=1
-                file = path+'/'+images+'/'+str(i)+'.png'
+                file = images+'/'+str(i)+'.png'
                 conversion.ReadString(mol, Chem.MolToSmiles(product))
                 conversion.WriteFile(mol, file)
 
-            print('%i images saved in %s\n'%(i,(path+'/'+images)))
+            print('%i images saved in %s\n'%(i,(images)))
             print('------------------------------------------------')
 
         else:
-            print('Error: directory %s already exist!\n'%(path+'/'+images))
+            print('Error: directory %s already exist!\n'%(images))
