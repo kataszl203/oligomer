@@ -276,12 +276,17 @@ def process_conformers(conformers, mer):
                     conformer.GetConformers(mol.OBMol)
                     # checking if conformers are different
                     dif_conf = 1
-                    init_conform = mol.OBMol.SetConformer(0)
+                    mol.OBMol.SetConformer(0)
+                    #init_conf=""
+                    init_conf=conversion.WriteString(mol.OBMol)
                     
                     for n in range(1, mol.OBMol.NumConformers()):
-                        new_conform = mol.OBMol.SetConformer(n)
+                        #new_conf = ""
+                        mol.OBMol.SetConformer(n)
+                        new_conf=conversion.WriteString(mol.OBMol)
 
-                        if init_conform != new_conform:
+
+                        if init_conf != new_conf:
                             dif_conf += 1
 
                     print('Number of conformers using confab: %d (%i different structures)\n' % (mol.OBMol.NumConformers(), dif_conf))
@@ -297,22 +302,22 @@ def process_conformers(conformers, mer):
                             print('Number of conformers using genetic algorithm: %d\n' % (mol.OBMol.NumConformers()))
                     
                     
-                        if mol.OBMol.NumConformers() <= conf_number:
-                            for j in range(mol.OBMol.NumConformers()):
-                                mol_file = conformers+'/'+str(i)+'_'+str(j)+'.mol2'
-                                mol.OBMol.SetConformer(j)
-                                pybel.Molecule(mol.OBMol).title = 'PU_'+mer+'_'+str(i)+'_'+str(j)
-                                conversion.WriteFile(mol.OBMol, mol_file)
-                                with open(mol_file,'r') as infile:
-                                    outfile.write(infile.read())
-                        else:
-                            for j in range(conf_number):
-                                mol_file = conformers+'/'+str(i)+'_'+str(j)+'.mol2'
-                                mol.OBMol.SetConformer(j)
-                                pybel.Molecule(mol.OBMol).title = 'PU_'+mer+'_'+str(i)+'_'+str(j)
-                                conversion.WriteFile(mol.OBMol, mol_file)
-                                with open(mol_file,'r') as infile:
-                                    outfile.write(infile.read())
+                    if mol.OBMol.NumConformers() <= conf_number:
+                        for j in range(mol.OBMol.NumConformers()):
+                            mol_file = conformers+'/'+str(i)+'_'+str(j)+'.mol2'
+                            mol.OBMol.SetConformer(j)
+                            pybel.Molecule(mol.OBMol).title = 'PU_'+mer+'_'+str(i)+'_'+str(j)
+                            conversion.WriteFile(mol.OBMol, mol_file)
+                            with open(mol_file,'r') as infile:
+                                outfile.write(infile.read())
+                    else:
+                        for j in range(conf_number):
+                            mol_file = conformers+'/'+str(i)+'_'+str(j)+'.mol2'
+                            mol.OBMol.SetConformer(j)
+                            pybel.Molecule(mol.OBMol).title = 'PU_'+mer+'_'+str(i)+'_'+str(j)
+                            conversion.WriteFile(mol.OBMol, mol_file)
+                            with open(mol_file,'r') as infile:
+                                outfile.write(infile.read())
 
             print('\nConformers saved in %s\n'%(conformers))
             print('------------------------------------------------')
