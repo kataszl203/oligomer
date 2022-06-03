@@ -277,11 +277,9 @@ def process_conformers(conformers, mer):
                     # checking if conformers are different
                     dif_conf = 1
                     mol.OBMol.SetConformer(0)
-                    #init_conf=""
                     init_conf=conversion.WriteString(mol.OBMol)
                     
                     for n in range(1, mol.OBMol.NumConformers()):
-                        #new_conf = ""
                         mol.OBMol.SetConformer(n)
                         new_conf=conversion.WriteString(mol.OBMol)
 
