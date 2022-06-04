@@ -3,8 +3,8 @@
 
 Generator of short oligomers of synthetic polymers (version for polyurethanes).
 
-This tool using SMILES entry generates specified oligomers (dimers, trimers, tetramers) encoded in SMILES.
-Products can be saved as 2D structures in .mol files or .png images, 3D structures in .mol2 files with option to generate conformers. 
+This tool using SMILES input generates specified oligomers (dimers, trimers, tetramers) encoded in SMILES.
+Products can be saved as 2D structures in .mol files or .png images, 3D structures in .mol2 files with additional option of generating conformers. 
 
 Used packages:
 

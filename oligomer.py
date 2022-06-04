@@ -36,7 +36,7 @@ parser.add_argument('-m2D','--molecules_2D', type=str, nargs='?', const = 'oligo
 parser.add_argument('-m3D','--molecules_3D', type=str, metavar='', nargs='?', const = 'oligomers_3D',
                     help='creating folder with .mol2 files of products (default: ''oligomers_3D'')')
 parser.add_argument('-c','--conformers', type=str, nargs='?', const = 'oligomers_conformers',
-                    help='creating folder conformers .mol2 files of products (default: 20 conformers saved in ''oligomers_conformers'')')
+                    help='creating folder with up to 20 conformers .mol2 files of products (default: ''oligomers_conformers'')')
 parser.add_argument('-I','--images', type=str, nargs='?', const = 'oligomers_images',
                     help='creating folder with png images of products (default: ''oligomers_images'')')
 
